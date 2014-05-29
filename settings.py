@@ -28,14 +28,19 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
+    #'djangocms_admin_style',
+    'progress_crm',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'south',
-    'progress_crm'
+    'admin_tools',
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
+    'django.contrib.admin'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -45,6 +50,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request'
 )
 
 ROOT_URLCONF = 'urls'
@@ -69,6 +82,9 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (
     'templates',
 )
+
+# Admin Tools settings
+ADMIN_TOOLS_MENU = 'progress_crm.admin_menu.CRMMenu'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

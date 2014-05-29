@@ -53,14 +53,25 @@ class Person(models.Model):
 	phone_numbers = models.ManyToManyField('PhoneNumber', through='PersonPhoneNumber')
 	# profiles reverse relation to Profile model
 
+	_primary_email = None
+
 	class Meta:
 		app_label = 'progress_crm'
+		verbose_name_plural = 'people'
 
 	def __unicode__(self):
 		return u"{0}".format(self.name())
 
 	def name(self):
-		return "{0} {1}".format(given_name, family_name)
+		return "{0} {1}".format(self.given_name, self.family_name)
+
+	def primary_email(self):
+		if not self._primary_email:
+			try:
+				self._primary_email = self.personemailaddress_set.get(primary=True).address
+			except PersonEmailAddress.DoesNotExist:
+				self._primary_email = 'No email'
+		return self._primary_email
 
 POSTAL_ADDRESS_TYPES = (
 	('home', 'Home'),
