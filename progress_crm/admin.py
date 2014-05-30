@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Person
+from .models import Person, Event, PostalAddress, Donation, FundraisingPage
 from admin_tools.dashboard import registry
 
 class PersonAdmin(admin.ModelAdmin):
@@ -23,4 +23,21 @@ class PersonAdmin(admin.ModelAdmin):
 
 	list_display = ('name', 'source', 'primary_email')
 
+class EventAdmin(admin.ModelAdmin):
+	fieldsets = (
+		('General Info', {
+			'fields': (('summary', 'identifier', 'status'), ('description', 'creator', 'organizer'))
+		}),
+		('Logistics', {
+			'fields': (('location', 'start', 'end', 'all_day', 'all_day_date'), ('capacity', 'guests_allowed'), ('transparence', 'visibility'))
+		}),
+		('Reminders', {
+			'fields': (('reminders', 'method', 'minutes'))
+		})
+	)
+
 admin.site.register(Person, PersonAdmin)
+admin.site.register(Event, EventAdmin)
+admin.site.register(PostalAddress)
+admin.site.register(Donation)
+admin.site.register(FundraisingPage)

@@ -107,6 +107,9 @@ class PostalAddress(models.Model):
 	class Meta:
 		app_label = 'progress_crm'
 
+	def __unicode__(self):
+		return "{0}".format(self.address_line)
+
 class PersonPostalAddress(models.Model):
 	person = models.ForeignKey(Person)
 	postal_address = models.ForeignKey(PostalAddress)

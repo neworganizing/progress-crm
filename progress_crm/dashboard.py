@@ -1,8 +1,14 @@
 from admin_tools.dashboard.dashboards import AppIndexDashboard
 from admin_tools.dashboard import modules
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Sum
 
-from progress_crm.models import Person
+from progress_crm.models import Person, Event, Donation, FundraisingPage
+
+class CRMFundraisingModule(modules.DashboardModule):
+    def init_with_context(self, context):
+        for page in FundraisingPage.objects.all():
+            self.children.append(page)
 
 class CRMStatsModule(modules.DashboardModule):
     def is_empty():
@@ -12,6 +18,9 @@ class CRMStatsModule(modules.DashboardModule):
 
     def init_with_context(self, context):
         context['total_people'] = Person.objects.count()
+        context['total_events'] = Event.objects.count()
+        context['total_donations'] = Donation.objects.count()
+        context['total_donation_amount'] = Donation.objects.aggregate(Sum('amount'))['amount__sum']
 
 
 class CRMDashboard(AppIndexDashboard):
@@ -42,6 +51,7 @@ class CRMDashboard(AppIndexDashboard):
                     modules.ModelList('Database',self.models)
                 ]
             ),
+            CRMFundraisingModule('Fundraising Pages'),
             modules.RecentActions(
                 _('Recent Actions'),
                 include_list=self.get_app_content_types(),

@@ -1,3 +1,5 @@
+import datetime
+
 from django.test import TestCase
 
 from ..models import *
@@ -7,7 +9,8 @@ class PersonTests(TestCase):
 		'''
 		Tests creating a basic person
 		'''
-		person = Person()
+		person = Person(source='user_created')
+		person.full_clean()
 		person.save()
 		self.assertEqual(Person.objects.count(), 1)
 
@@ -122,3 +125,89 @@ class PersonTests(TestCase):
 		self.assertEqual(person.postal_addresses.count(), 1)
 		self.assertEqual(person.phone_numbers.count(), 1)
 		self.assertEqual(person.profiles.count(), 1)
+
+class EventTests(TestCase):
+	def setUp(self):
+		self.person_one = Person(source='user_created')
+		self.person_one.save()
+		self.person_two = Person(source='user_created')
+		self.person_two.save()
+
+	def test_invalid_event(self):
+		event = Event()
+
+		with self.assertRaises(ValidationError):
+			event.full_clean()
+			event.save()
+
+		self.assertEqual(Event.objects.count(), 0)
+
+	def test_create_event(self):
+		'''
+		Test creating an event with the minimum required fields
+		'''
+		address = PostalAddress(
+			status='verified',
+			locality='Washington',
+			country='US',
+			region='DC',
+			postal_code='20036',
+			address_line='{"street_address": "1133 19th Street NW"}',
+			address_type='work'
+		)
+		address.save()
+
+		event = Event(
+			identifier="progresscrm:1",
+			start=datetime.datetime.now(),
+			end=datetime.datetime.now() + datetime.timedelta(days=1),
+			summary="My event",
+			creator=self.person_one,
+			location=address
+		)
+		event.full_clean()
+		event.save()
+
+		self.assertEqual(Event.objects.count(), 1)
+
+class DonationTests(TestCase):
+	def setUp(self):
+		self.person_one = Person(source='user_created')
+		self.person_one.save()
+
+	def test_basic_donation(self):
+		donation = Donation(
+			identifiers = 'progress-crm:1',
+			created_at = datetime.datetime.now(),
+			modified_at = datetime.datetime.now(),
+			originating_system = 'progress-crm',
+			donor = self.person_one,
+			donated_at = datetime.datetime.now(),
+			amount = 10.00,
+			currency = "USD",
+			payment = '{"method": "credit_card", "reference_number": "0000001"}',
+			url = "http://progresscrm.com/donations/1"
+		)
+		donation.full_clean()
+		donation.save()
+
+		self.assertEqual(Donation.objects.count(), 1)
+
+	def test_basic_fundraising_page(self):
+		fundraising_page = FundraisingPage(
+			identifiers = 'progress-crm:1',
+			originating_system = 'progress-crm',
+			created_at = datetime.datetime.now(),
+			modified_at = datetime.datetime.now(),
+			name = 'My Fundraising Page',
+			title = 'My Fundraising Page',
+			summary = 'A page for fundraising for my interests',
+			url = 'http://progresscrm.com/fundraising_pages/1',
+			currency = 'USD',
+			creator = self.person_one
+		)
+
+		fundraising_page.full_clean()
+		fundraising_page.save()
+
+		self.assertEqual(FundraisingPage.objects.count(), 1)
