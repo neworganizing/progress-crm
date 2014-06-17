@@ -68,10 +68,16 @@ class Person(models.Model):
 	def primary_email(self):
 		if not self._primary_email:
 			try:
-				self._primary_email = self.personemailaddress_set.get(primary=True).address
+				self._primary_email = self.personemailaddress_set.get(primary=True).email_address.address
 			except PersonEmailAddress.DoesNotExist:
 				self._primary_email = 'No email'
 		return self._primary_email
+
+	def add_identifier(self, identifier):
+		id_array = self.identifiers.split(',')
+		if identifier not in id_array:
+			id_array.append(identifier)
+			self.identifiers = ','.join(id_array)
 
 POSTAL_ADDRESS_TYPES = (
 	('home', 'Home'),
@@ -117,6 +123,7 @@ class PersonPostalAddress(models.Model):
 
 	class Meta:
 		app_label = 'progress_crm'
+		unique_together = ['person', 'postal_address']
 
 EMAIL_TYPE_CHOICES = (
 	('personal', 'Personal'),
@@ -130,6 +137,9 @@ class EmailAddress(models.Model):
 	class Meta:
 		app_label = 'progress_crm'
 
+	def __unicode__(self):
+		return "{0} ({1})".format(self.address, self.address_type)
+
 class PersonEmailAddress(models.Model):
 	person = models.ForeignKey(Person)
 	email_address = models.ForeignKey(EmailAddress)
@@ -137,6 +147,7 @@ class PersonEmailAddress(models.Model):
 
 	class Meta:
 		app_label = 'progress_crm'
+		unique_together = ['person', 'email_address']
 
 PHONE_TYPE_CHOICES = (
 	('home', 'Home'),
@@ -175,6 +186,7 @@ class PersonPhoneNumber(models.Model):
 
 	class Meta:
 		app_label = 'progress_crm'
+		unique_together = ['person', 'phone_number']
 
 class Profile(models.Model):
 	person = models.ForeignKey(Person, related_name='profiles')
@@ -185,6 +197,7 @@ class Profile(models.Model):
 
 	class Meta:
 		app_label = 'progress_crm'
+		unique_together = ['person', 'provider', 'identifier']
 
 	def __unicode__(self):
 		return u"{0}'s {1} profile".format(person.name(), provider)

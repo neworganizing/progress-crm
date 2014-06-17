@@ -1,8 +1,16 @@
 from django.contrib import admin
-from .models import Person, Event, PostalAddress, Donation, FundraisingPage
+from .models import Person, Event, EmailAddress, PostalAddress, Donation, FundraisingPage
 from admin_tools.dashboard import registry
 
+class PersonEmailAddressInline(admin.TabularInline):
+	model = Person.email_addresses.through
+	extra = 0
+
 class PersonAdmin(admin.ModelAdmin):
+	inlines = [
+		PersonEmailAddressInline,
+	]
+
 	fieldsets = (
 		('Name', {
 			'fields': (('given_name', 'family_name', 'additional_name'), ('honorific_prefix', 'honorific_suffix'),)
