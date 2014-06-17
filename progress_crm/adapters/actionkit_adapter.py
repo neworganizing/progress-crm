@@ -10,9 +10,9 @@ class ActionkitAdapter(BaseAdapter):
 		)
 		print self.connection
 
-	def sync(self, models=[], batch_size=100):
+	def sync(self, start_at=0, batch_size=100, models=[]):
 		total_people = self.connection.user.count()
-		current_count = 0
+		current_count = start_at
 
 		while current_count < total_people:
 			people = self.connection.user.list(_offset=current_count, _limit=batch_size)
@@ -28,7 +28,7 @@ class ActionkitAdapter(BaseAdapter):
 		Retreives a person's data, dedupes, and adds/updates as needed.
 		"""
 
-		print "Syncing {0} {1}, {2}".format(person_data['first_name'], person_data['last_name'], person_data['id'])
+		print u"Syncing {0} {1}, {2}".format(person_data['first_name'], person_data['last_name'], person_data['id'])
 
 		### Step 1: See if person exists by actionkit id
 		matched = False
@@ -73,7 +73,7 @@ class ActionkitAdapter(BaseAdapter):
 		)
 		email_address.save()
 
-		person_data['address1'] = re.sub(r"[\"\'\,]", "", person_data['address1'])
+		person_data['address1'] = re.sub(r"[\"\'\,\:\\]", "", person_data['address1'])
 
 		# Ditto with postal address
 		postal_address, postal_addr_created = PostalAddress.objects.get_or_create(
