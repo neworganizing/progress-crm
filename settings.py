@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     'admin_tools.theming',
     'admin_tools.menu',
     'admin_tools.dashboard',
-    'django.contrib.admin'
+    'django.contrib.admin',
+    'progress_crm_stats'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,6 +86,7 @@ TEMPLATE_DIRS = (
 
 # Admin Tools settings
 ADMIN_TOOLS_MENU = 'progress_crm.admin_menu.CRMMenu'
+ADMIN_TOOLS_THEMING_CSS = 'css/dashboard_theme.css'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
