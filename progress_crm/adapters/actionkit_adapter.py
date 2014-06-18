@@ -2,27 +2,88 @@ import re
 from django.db import IntegrityError
 from actionkit import ActionKit
 from progress_crm.adapters.base_adapter import BaseAdapter
-from progress_crm.models import Person, EmailAddress, PersonEmailAddress, PostalAddress, PersonPostalAddress
+from progress_crm.models import (Person, EmailAddress, PersonEmailAddress,
+								 PostalAddress, PersonPostalAddress, List)
 
 class ActionkitAdapter(BaseAdapter):
+	errors = []
+
 	def connect(self, url, username, password):
 		self.connection = ActionKit(
 			instance=url, username=username, password=password
 		)
 		print self.connection
 
-	def sync(self, start_at=0, batch_size=100, models=[]):
-		total_people = self.connection.user.count()
-		current_count = start_at
+	def sync(self, options={}):
 
-		while current_count < total_people:
-			people = self.connection.user.list(_offset=current_count, _limit=batch_size)
+		models_to_sync = options.get(
+			'models',
+			['person', 'list']
+		)
+
+		if 'person' in models_to_sync:
+			self.sync_people(
+				start_at=options.get('people_startat', 0),
+				batch_size=options.get('people_batchsize', 100)
+			)
+
+		if 'list' in models_to_sync:
+			self.sync_lists(
+				batch_size = options.get('list_batchsize', 100)
+			)
+
+	def sync_lists(self, batch_size=100):
+		lists = self.connection.list.list()
+
+		for list_data in lists['objects']:
+			self.sync_list(list_data, batch_size=batch_size)
+
+	def sync_list(self, list_data, batch_size=100):
+		list_object, created = List.objects.get_or_create(identifier=u'actionkit:{0}'.format(list_data['id']))
+		list_object.name = list_data['name']
+		list_object.type = 'email'
+		list_object.is_dynamic = False
+		list_object.save()
+
+		subscription_count = self.connection.subscription.count(list=list_data['id'])
+		index = 0
+		list_complete = True
+
+		while index < subscription_count:
+			subscriptions = self.connection.subscription.list(
+			 	list=list_data['id'],
+			 	_offset=index,
+			 	_limit=batch_size
+			)
+
+			for sub in subscriptions['objects']:
+				try:				
+					person = Person.objects.get(identifiers__contains=u'actionkit:{0}'.format(sub['user_id']))
+				except Person.DoesNotExist:
+					list_complete = False
+					self.errors.append('User with actionkit id of {0} not found.'.format(sub['id']))
+
+				item = ListItem(
+					content_object=person,
+					created_at=sub['created_at'],
+					updated_at=sub['updated_at']
+				)
+				item.save()
+				list_object.items.add(item)
+
+
+	def sync_people(self, start_at=0, batch_size=100):
+		people_count = self.connection.user.count()
+		index = start_at
+
+		while index < people_count:
+			people = self.connection.user.list(_offset=index, _limit=batch_size)
 
 			for person in people['objects']:
 				self.sync_person(person)
 
-			current_count += batch_size
-			print "Imported {0} records...".format(current_count)
+			index += batch_size
+			print "Imported {0} records...".format(index)
 
 	def sync_person(self, person_data):
 		"""

@@ -45,9 +45,12 @@ class EventAdmin(admin.ModelAdmin):
 		})
 	)
 
+class ListAdmin(admin.ModelAdmin):
+	list_display = ('name', 'type', 'item_count')
+
 admin.site.register(Person, PersonAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(PostalAddress)
 admin.site.register(Donation)
 admin.site.register(FundraisingPage)
-admin.site.register(List)
+admin.site.register(List, ListAdmin)

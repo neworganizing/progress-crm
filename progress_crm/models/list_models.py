@@ -10,6 +10,8 @@ class ListItem(models.Model):
 	content_type = models.ForeignKey(ContentType)
 	object_id = models.PositiveIntegerField()
 	content_object = GenericForeignKey('content_type', 'object_id')
+	created_at = models.DateTimeField()
+	updated_at = models.DateTimeField()
 
 	class Meta:
 		app_label = 'progress_crm'
@@ -32,7 +34,15 @@ class List(models.Model):
 	description = models.TextField(blank=True, null=True)
 	type = models.CharField(max_length=127)
 	is_dynamic = models.NullBooleanField()
+	created_at = models.DateTimeField()
+	updated_at = models.DateTimeField()
 	items = GenericRelation(ListItem)
 
 	class Meta:
 		app_label = 'progress_crm'
+
+	def __unicode__(self):
+		return self.name
+
+	def item_count(self):
+		return self.items.count()
