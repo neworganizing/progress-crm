@@ -35,7 +35,7 @@ class ActionkitAdapter(BaseAdapter):
 		matched = False
 		try:
 			# NOTE: Trailing comma is needed to distinguish actionkit:1 from actionkit:10, etc.
-			matched_person = Person.objects.get(identifiers__contains='actionkit:{0},'.format(person_data['id']))
+			matched_person = Person.objects.get(identifiers__contains=u'actionkit:{0},'.format(person_data['id']))
 			matched = True
 		except Person.DoesNotExist:
 			matched_person = None
@@ -55,14 +55,14 @@ class ActionkitAdapter(BaseAdapter):
 				setattr(person, key, value)
 
 			# add identifier, as other identifiers may already exist
-			person.add_identifier('actionkit:{0}'.format(person_data['id']))
+			person.add_identifier(u'actionkit:{0}'.format(person_data['id']))
 		else:
 			# If not matched, create a new person
 			person = Person(**person_data_fields)
 			# Set identifiers to Actionkit ID
 			# NOTE: trailing comma is required for matching properly
-			person.identifiers='actionkit:{0},'.format(person_data['id'])
-			person.source='actionkit'
+			person.identifiers=u'actionkit:{0},'.format(person_data['id'])
+			person.source=u'actionkit'
 
 		person.save()
 
@@ -70,21 +70,29 @@ class ActionkitAdapter(BaseAdapter):
 		# in the database
 		email_address, email_created = EmailAddress.objects.get_or_create(
 			address=person_data['email'],
-			address_type='personal'
+			address_type=u'personal'
 		)
 		email_address.save()
 
 		person_data['address1'] = re.sub(r'[\"\'\,\:\\\r\n]', "", person_data['address1'])
+		person_data['address1'] = person_data['address1'].encode('ascii', 'ignore')
+
+		address_json = u'{"street_address": "'+person_data['address1']+'"}'
+
+		try:
+			json.loads(address_json)
+		except:
+			address_json = None
 
 		# Ditto with postal address
 		postal_address, postal_addr_created = PostalAddress.objects.get_or_create(
-			status='verified',
+			status=u'verified',
 			locality=person_data['city'],
-			country='US',
+			country=u'US',
 			region=person_data['state'],
 			postal_code=person_data['zip'],
-			address_line='{"street_address": "'+person_data['address1']+'"}',
-			address_type='home'
+			address_line=address_json,
+			address_type=u'home'
 		)
 		postal_address.save()
 
