@@ -1,4 +1,5 @@
 import re
+from django.db import IntegrityError
 from actionkit import ActionKit
 from progress_crm.adapters.base_adapter import BaseAdapter
 from progress_crm.models import Person, EmailAddress, PersonEmailAddress, PostalAddress, PersonPostalAddress
@@ -73,7 +74,7 @@ class ActionkitAdapter(BaseAdapter):
 		)
 		email_address.save()
 
-		person_data['address1'] = re.sub(r"[\"\'\,\:\\]", "", person_data['address1'])
+		person_data['address1'] = re.sub(r'[\"\'\,\:\\\r\n]', "", person_data['address1'])
 
 		# Ditto with postal address
 		postal_address, postal_addr_created = PostalAddress.objects.get_or_create(
