@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Person, Event, EmailAddress, PostalAddress, Donation, FundraisingPage
+from .models import (Person, Event, EmailAddress, PostalAddress, Donation,
+					 FundraisingPage, List)
 from admin_tools.dashboard import registry
 
 class PersonEmailAddressInline(admin.TabularInline):
@@ -49,3 +50,4 @@ admin.site.register(Event, EventAdmin)
 admin.site.register(PostalAddress)
 admin.site.register(Donation)
 admin.site.register(FundraisingPage)
+admin.site.register(List)
