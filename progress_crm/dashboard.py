@@ -1,27 +1,17 @@
 from admin_tools.dashboard.dashboards import AppIndexDashboard
 from admin_tools.dashboard import modules
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Sum
 
-from progress_crm.models import Person, Event, Donation, FundraisingPage
+from progress_crm.models import FundraisingPage
+from progress_crm.plugins import CRMDashboardRegister
 
 class CRMFundraisingModule(modules.DashboardModule):
+    def is_empty(self):
+        return False
+
     def init_with_context(self, context):
         for page in FundraisingPage.objects.all():
             self.children.append(page)
-
-class CRMStatsModule(modules.DashboardModule):
-    def is_empty():
-        return false
-    #title = "Statistics"
-    template = "progress_crm/stats_module.html"
-
-    def init_with_context(self, context):
-        context['total_people'] = Person.objects.count()
-        context['total_events'] = Event.objects.count()
-        context['total_donations'] = Donation.objects.count()
-        context['total_donation_amount'] = Donation.objects.aggregate(Sum('amount'))['amount__sum']
-
 
 class CRMDashboard(AppIndexDashboard):
     """
@@ -36,20 +26,26 @@ class CRMDashboard(AppIndexDashboard):
     """
 
     # we disable title because its redundant with the model list module
-    title = 'ProgressCRM'
+    title = None
 
     def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
 
         # append a model list module and a recent actions module
+
+        # TODO: Pull in models from plugins
+        control_panel_modules = []
+
+        for classname, module in CRMDashboardRegister.REGISTRY.iteritems():
+            control_panel_modules.append(module())
+
+        control_panel_modules.append(modules.ModelList('Database',self.models))
+
         self.children += [
             modules.Group(
                 title="Control Panel",
                 display="tabs",
-                children=[
-                    CRMStatsModule('Statistics'),
-                    modules.ModelList('Database',self.models)
-                ]
+                children=control_panel_modules
             ),
             CRMFundraisingModule('Fundraising Pages'),
             modules.RecentActions(

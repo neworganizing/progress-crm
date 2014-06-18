@@ -98,7 +98,7 @@ POSTAL_ADDRESS_STATUS_CHOICES = (
 
 class PostalAddress(models.Model):
 	address_type = models.CharField(max_length=255, choices=POSTAL_ADDRESS_TYPES)
-	address_line = JSONField()
+	address_line = JSONField(null=True, blank=True)
 	locality = models.CharField(max_length=255)
 	region = models.CharField(max_length=2)
 	postal_code = models.CharField(max_length=63)
