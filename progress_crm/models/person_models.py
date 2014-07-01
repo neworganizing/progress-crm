@@ -63,7 +63,7 @@ class Person(models.Model):
 		return u"{0}".format(self.name())
 
 	def name(self):
-		return "{0} {1}".format(self.given_name, self.family_name)
+		return u"{0} {1}".format(self.given_name, self.family_name)
 
 	def primary_email(self):
 		if not self._primary_email:

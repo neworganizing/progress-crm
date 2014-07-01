@@ -1,0 +1,8 @@
+{% extends "admin_tools/dashboard/module.html" %}
+
+{% block module_content %}
+<p>Total people: {{ total_people }}</p>
+<p>Total events: {{ total_events }}</p>
+<p>Total donations: {{ total_donations }}</p>
+<p>Total amount raised: ${{ total_donation_amount }}</p>
+{% endblock %}

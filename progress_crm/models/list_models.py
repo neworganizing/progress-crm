@@ -2,23 +2,6 @@ from django.db import models
 from django.contrib.contenttypes.generic import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
-class ListItem(models.Model):
-	'''
-	We use Django's GenericRelation to create a list model that can hold any
-	other type of model.
-	'''
-	content_type = models.ForeignKey(ContentType)
-	object_id = models.PositiveIntegerField()
-	content_object = GenericForeignKey('content_type', 'object_id')
-	created_at = models.DateTimeField()
-	updated_at = models.DateTimeField()
-
-	class Meta:
-		app_label = 'progress_crm'
-
-	def __unicode__(self):
-		return u"List item {0} - {1}".format(content_type, object_id)
-
 class List(models.Model):
 	'''
 	A list that is capable of holding items of any type.
@@ -34,9 +17,9 @@ class List(models.Model):
 	description = models.TextField(blank=True, null=True)
 	type = models.CharField(max_length=127)
 	is_dynamic = models.NullBooleanField()
-	created_at = models.DateTimeField()
-	updated_at = models.DateTimeField()
-	items = GenericRelation(ListItem)
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+	#items = reverse relation
 
 	class Meta:
 		app_label = 'progress_crm'
@@ -46,3 +29,22 @@ class List(models.Model):
 
 	def item_count(self):
 		return self.items.count()
+
+class ListItem(models.Model):
+	'''
+	We use Django's GenericRelation to create a list model that can hold any
+	other type of model.
+	'''
+	list = models.ForeignKey(List, related_name='items')
+	content_type = models.ForeignKey(ContentType)
+	object_id = models.PositiveIntegerField()
+	content_object = GenericForeignKey('content_type', 'object_id')
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+
+	class Meta:
+		app_label = 'progress_crm'
+		unique_together = ['list', 'content_type', 'object_id']
+
+	def __unicode__(self):
+		return u"List item {0} - {1}".format(content_type, object_id)

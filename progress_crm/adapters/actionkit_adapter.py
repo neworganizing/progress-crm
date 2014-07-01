@@ -1,96 +1,128 @@
 import re
+import pytz
+from dateutil.parser import parse
 from django.db import IntegrityError
+from django.core.exceptions import ImproperlyConfigured
+from django.contrib.contenttypes.models import ContentType
 from actionkit import ActionKit
 from progress_crm.adapters.base_adapter import BaseAdapter
 from progress_crm.models import (Person, EmailAddress, PersonEmailAddress,
-								 PostalAddress, PersonPostalAddress, List)
+								 PostalAddress, PersonPostalAddress, List,
+								 ListItem, Donation)
 
 class ActionkitAdapter(BaseAdapter):
-	errors = []
+	"""
+	An adapter wrapping python-actionkit, which is a library for interacting with the ActionKit API.
+	"""
+	adapter_name = 'Actionkit'
+	max_batchsize = 100
+	person_type = None
+
+	def __init__(self, *args, **kwargs):
+		self.person_type = ContentType.objects.get(app_label="progress_crm", model="person")
+		return super(ActionkitAdapter, self).__init__(*args, **kwargs)
 
 	def connect(self, url, username, password):
 		self.connection = ActionKit(
 			instance=url, username=username, password=password
 		)
-		print self.connection
 
-	def sync(self, options={}):
+	def get_lists(self):
+		return self.connection.list.list()['objects']
 
-		models_to_sync = options.get(
-			'models',
-			['person', 'list']
-		)
+	def get_list_item_count(self, list_data):
+		return self.connection.subscription.count(list=list_data['id'])
 
-		if 'person' in models_to_sync:
-			self.sync_people(
-				start_at=options.get('people_startat', 0),
-				batch_size=options.get('people_batchsize', 100)
-			)
+	def get_list_items(self, list_data, index, batch_size):
+		return self.connection.subscription.list(
+		 	list=list_data['id'],
+		 	_offset=index,
+		 	_limit=batch_size
+		)['objects']
 
-		if 'list' in models_to_sync:
-			self.sync_lists(
-				batch_size = options.get('list_batchsize', 100)
-			)
+	def get_people_count(self):
+		return self.connection.user.count()
 
-	def sync_lists(self, batch_size=100):
-		lists = self.connection.list.list()
+	def get_people(self, index, batch_size):
+		return self.connection.user.list(_offset=index, _limit=batch_size)['objects']
 
-		for list_data in lists['objects']:
-			self.sync_list(list_data, batch_size=batch_size)
+	def get_donations_count(self):
+		return self.connection.donationaction.count()
 
-	def sync_list(self, list_data, batch_size=100):
+	def get_donations(self, index, batch_size):
+		donations = self.connection.order.list(_offset=index, _limit=batch_size)['objects']
+		return donations
+
+	def create_list(self, list_data):
 		list_object, created = List.objects.get_or_create(identifier=u'actionkit:{0}'.format(list_data['id']))
 		list_object.name = list_data['name']
 		list_object.type = 'email'
 		list_object.is_dynamic = False
 		list_object.save()
+		return list_object
 
-		subscription_count = self.connection.subscription.count(list=list_data['id'])
-		index = 0
-		list_complete = True
+	def create_donation(self, donation_data):
+		created = False
+		try:
+			donation_object = Donation.objects.get(identifiers__contains=u'actionkit:{0},'.format(donation_data['id']))
+			created = True
+		except Donation.DoesNotExist:
+			donation_object = Donation(identifiers=u'actionkit:{0},'.format(donation_data['id']))
 
-		while index < subscription_count:
-			subscriptions = self.connection.subscription.list(
-			 	list=list_data['id'],
-			 	_offset=index,
-			 	_limit=batch_size
-			)
+		created_at = pytz.utc.localize(parse(donation_data['created_at']))
 
-			for sub in subscriptions['objects']:
-				try:				
-					person = Person.objects.get(identifiers__contains=u'actionkit:{0}'.format(sub['user_id']))
-				except Person.DoesNotExist:
-					list_complete = False
-					self.errors.append('User with actionkit id of {0} not found.'.format(sub['id']))
+		donation_object.created_at = pytz.utc.localize(parse(donation_data['created_at']))
+		donation_object.modified_at = pytz.utc.localize(parse(donation_data['updated_at']))
+		donation_object.originating_system = 'actionkit'
 
-				item = ListItem(
-					content_object=person,
-					created_at=sub['created_at'],
-					updated_at=sub['updated_at']
-				)
-				item.save()
-				list_object.items.add(item)
+		user_id = donation_data['user'].split('/')[-2]
+		try:				
+			person = Person.objects.get(identifiers__contains=u'actionkit:{0},'.format(user_id))
+		except Person.DoesNotExist:
+			error_message = 'User with actionkit id of {0} not found.'.format(user_id)
+			print error_message
+			self.errors.append(error_message)
+			return
+			
+		donation_object.donor = person
+		donation_object.donated_at = donation_object.created_at
+		donation_object.amount = donation_data['total']
+		donation_object.currency = donation_data['currency']
+		donation_object.url = donation_data['resource_uri']
+		donation_object.save()
 
+	def create_list_item(self, list_item_data, list_object):
+		"""
+		Actionkit only supports lists of users, so we can assume all
+		objects are Person objects.
+		"""
+		user_id = list_item_data['user'].split('/')[-2]
+		try:				
+			person = Person.objects.get(identifiers__contains=u'actionkit:{0},'.format(user_id))
+		except Person.DoesNotExist:
+			error_message = 'User with actionkit id of {0} not found.'.format(user_id)
+			print error_message
+			self.errors.append(error_message)
+			return
 
-	def sync_people(self, start_at=0, batch_size=100):
-		people_count = self.connection.user.count()
-		index = start_at
+		created_at = pytz.utc.localize(parse(list_item_data['created_at']))
+		updated_at = pytz.utc.localize(parse(list_item_data['updated_at']))
 
-		while index < people_count:
-			people = self.connection.user.list(_offset=index, _limit=batch_size)
+		item, li_created = ListItem.objects.get_or_create(
+			list=list_object,
+			content_type=self.person_type,
+			object_id=person.pk
+		)
+		item.created_at=created_at
+		item.updated_at=updated_at
+		item.save()
 
-			for person in people['objects']:
-				self.sync_person(person)
-
-			index += batch_size
-			print "Imported {0} records...".format(index)
-
-	def sync_person(self, person_data):
+	def create_person(self, person_data):
 		"""
 		Retreives a person's data, dedupes, and adds/updates as needed.
 		"""
 
-		print u"Syncing {0} {1}, {2}".format(person_data['first_name'], person_data['last_name'], person_data['id'])
+		#print u"Syncing {0} {1}, {2}".format(person_data['first_name'], person_data['last_name'], person_data['id'])
 
 		### Step 1: See if person exists by actionkit id
 		matched = False
@@ -160,18 +192,11 @@ class ActionkitAdapter(BaseAdapter):
 		# Attempt to assign email and postal address to the person,
 		# ignoring if they have already been assigned
 
-		try:
-			person_email_address = PersonEmailAddress(person=person, email_address=email_address)
-			if person.email_addresses.count() == 0:
-				person_email_address.primary = True
-			person_email_address.save()
-		except IntegrityError:
-			pass
+		# TODO: Add flags for controlling what is set to primary and when
+		person_email_address, pea_created = PersonEmailAddress.objects.get_or_create(person=person, email_address=email_address)
+		person_email_address.primary = True
+		person_email_address.save()
 
-		try:
-			person_postal_address = PersonPostalAddress(person=person, postal_address=postal_address)
-			if person.postal_addresses.count() == 0:
-				person_postal_address.primary = True
-			person_postal_address.save()
-		except IntegrityError:
-			pass
+		person_postal_address, ppa_created = PersonPostalAddress.objects.get_or_create(person=person, postal_address=postal_address)
+		person_postal_address.primary = True
+		person_postal_address.save()
