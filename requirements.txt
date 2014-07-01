@@ -2,3 +2,5 @@ django
 django-jsonfield
 django-admin-tools
 flake8
+pytz
+python-dateutil

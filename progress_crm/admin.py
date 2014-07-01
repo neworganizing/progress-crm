@@ -7,9 +7,14 @@ class PersonEmailAddressInline(admin.TabularInline):
 	model = Person.email_addresses.through
 	extra = 0
 
+class PersonPostalAddressInline(admin.TabularInline):
+	model = Person.postal_addresses.through
+	extra = 0
+
 class PersonAdmin(admin.ModelAdmin):
 	inlines = [
 		PersonEmailAddressInline,
+		PersonPostalAddressInline
 	]
 
 	fieldsets = (

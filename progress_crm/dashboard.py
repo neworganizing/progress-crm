@@ -47,10 +47,10 @@ class CRMDashboard(AppIndexDashboard):
                 display="tabs",
                 children=control_panel_modules
             ),
-            CRMFundraisingModule('Fundraising Pages'),
             modules.RecentActions(
                 _('Recent Actions'),
                 include_list=self.get_app_content_types(),
                 limit=5
-            )
+            ),
+            CRMFundraisingModule('Fundraising Pages')
         ]

@@ -1,8 +1,59 @@
 {% extends "admin_tools/dashboard/module.html" %}
 
+{% load humanize %}
+
 {% block module_content %}
-<p>Total people: {{ total_people }}</p>
-<p>Total events: {{ total_events }}</p>
-<p>Total donations: {{ total_donations }}</p>
-<p>Total amount raised: ${{ total_donation_amount }}</p>
+<style>
+	table#toplines {
+		width: 100%;
+	}
+
+	table#lists {
+		width: 66%;
+	}
+
+	table#lists, table#states {
+		float: left;
+	}
+</style>
+
+<div class="clearfix">
+	<table id="toplines">
+		<tr>
+			<td>Total people: {{ total_people }}</td>
+			<td>Total events: {{ total_events }}</td>
+			<td>Total donations: {{ total_donations }}</td>
+			<td>Total amount raised: ${{ total_donation_amount|floatformat:2|intcomma }}</td>
+		</tr>
+	</table>
+
+	<table id="lists">
+		<tr>
+			<th>List</th>
+			<th>Count</th>
+		</tr>
+	{% for list in lists %}
+		<tr {% if forloop.first %}class="selected"{% endif %}>
+			<td>{{ list.name }}</td>
+			<td>{{ list.item_count }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+
+	<table id="states">
+		<tr>
+			<th>State</th>
+			<th>Count</th>
+		</tr>
+
+		{% for state in state_counts %}
+			<tr>
+				<td>{{ state.postal_addresses__region }}</td>
+				<td>{{ state.count }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	<br style="clear: both;" />
+</div>
 {% endblock %}
