@@ -72,7 +72,20 @@ class BaseAdapter(object):
 				self.create_form(form)
 
 			index += batch_size
-			print "Imported {0} form records...".format(index)		
+			print "Imported {0} form records...".format(index)
+
+	def sync_form_submissions(self, start_at=0, batch_size=100):
+		if self.max_batchsize and batch_size > self.max_batchsize:
+			raise ImproperlyConfigured("{0} has a max batch size of {1}".format(self.adapter_name, self.max_batchsize))
+
+		index = start_at
+
+		while index < self.get_form_submissions_count():
+			for form_submission in self.get_form_submissions(index, batch_size):
+				self.create_form_submission(form_submission)
+
+			index += batch_size
+			print "Imported {0} form submission records...".format(index)
 
 	def sync_people(self, start_at=0, batch_size=100):
 		if self.max_batchsize and batch_size > self.max_batchsize:
@@ -151,18 +164,42 @@ class BaseAdapter(object):
 
 	def get_forms_count(self):
 		"""
-		Override to return the number of donations in the system
+		Override to return the number of forms in the system
 		"""
 		pass
 
 	def get_forms(self, index, batch_size):
 		"""
-		Override to return a list of donations
+		Override to return a list of forms
 		"""
 		pass
 
-	def create_form(self, donation_data):
+	def create_form(self, form_data):
 		"""
-		Override to translate donation_data to a donation object.
+		Override to translate form_data to a Form object.
+		"""
+		pass
+
+	def get_form_submissions_count(self):
+		"""
+		Override to return the number of forms in the system
+		"""
+		pass
+
+	def get_form_submissions(self, index, batch_size):
+		"""
+		Override to return a list of forms
+		"""
+		pass
+
+	def create_form_submission(self, form_submission_data):
+		"""
+		Override to translate form_submission_data to a Submission object.
+		"""
+		pass
+
+	def update_person(self, person_data):
+		"""
+		Override to send data to the adapter's API to update a person.
 		"""
 		pass
