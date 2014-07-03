@@ -1,15 +1,13 @@
 from django.db.models import Sum, Count
 from progress_crm.plugins import CRMDashboardModule
-from progress_crm.models import Person, Event, Donation, List
+from progress_crm.models import Person, Event, Donation, List, ListItem
 
 class CRMStatsModule(CRMDashboardModule):
     title = 'Statistics'
+    template = "progress_crm_stats/stats_module.html"
 
     def is_empty():
-        return false
-
-    #title = "Statistics"
-    template = "progress_crm_stats/stats_module.html"
+        return False
 
     def init_with_context(self, context):
         context['lists'] = List.objects.all()
@@ -30,3 +28,13 @@ class CRMStatsModule(CRMDashboardModule):
         ).annotate(
             count=Count('postal_addresses__region')
         ).order_by('postal_addresses__region')
+
+        list_growth_data = ListItem.objects.extra(
+            select={'month': "strftime('%%m', datetime(created_at))"}
+        ).filter(
+            list_id=1, created_at__gte='2014-01-01'
+        ).values('month'
+        ).order_by('month'
+        ).annotate(Count('id'))
+
+        context['list_growth_data'] = [int(x['id__count']) for x in list_growth_data]

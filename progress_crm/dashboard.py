@@ -15,14 +15,7 @@ class CRMFundraisingModule(modules.DashboardModule):
 
 class CRMDashboard(AppIndexDashboard):
     """
-    The default dashboard displayed on the applications index page.
-    To change the default dashboard you'll have to type the following from the
-    commandline in your project root directory::
-
-        python manage.py customdashboard
-
-    And then set the ``ADMIN_TOOLS_APP_INDEX_DASHBOARD`` settings variable to
-    point to your custom app index dashboard class.
+    ProgressCRM's custom dashboard system.
     """
 
     # we disable title because its redundant with the model list module
@@ -52,5 +45,5 @@ class CRMDashboard(AppIndexDashboard):
                 include_list=self.get_app_content_types(),
                 limit=5
             ),
-            CRMFundraisingModule('Fundraising Pages')
+            #CRMFundraisingModule('Fundraising Pages')
         ]

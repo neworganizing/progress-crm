@@ -42,7 +42,8 @@ INSTALLED_APPS = (
     'admin_tools.menu',
     'admin_tools.dashboard',
     'django.contrib.admin',
-    'progress_crm_stats'
+    'progress_crm_stats',
+    'progress_crm_reporting'
 )
 
 MIDDLEWARE_CLASSES = (

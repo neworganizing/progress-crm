@@ -9,7 +9,7 @@
 	}
 
 	table#lists {
-		width: 66%;
+		width: 100%;
 	}
 
 	table#lists, table#states {
@@ -27,19 +27,24 @@
 		</tr>
 	</table>
 
-	<table id="lists">
-		<tr>
-			<th>List</th>
-			<th>Count</th>
-		</tr>
-	{% for list in lists %}
-		<tr {% if forloop.first %}class="selected"{% endif %}>
-			<td>{{ list.name }}</td>
-			<td>{{ list.item_count }}</td>
-		</tr>
-	{% endfor %}
-	</table>
+	<div style="width: 66%; float: left;">
+		<canvas id="listGrowth" style="width: 100% !important; max-width: 600px; height: auto !important;"></canvas>
 
+		<table id="lists">
+			<tr>
+				<th>List</th>
+				<th>Count</th>
+			</tr>
+		{% for list in lists %}
+			<tr {% if forloop.first %}class="selected"{% endif %}>
+				<td>{{ list.name }}</td>
+				<td>{{ list.item_count }}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+	
+	<div style="width: 33%; float: left;">
 	<table id="states">
 		<tr>
 			<th>State</th>
@@ -53,7 +58,25 @@
 			</tr>
 		{% endfor %}
 	</table>
+	</div>
 
 	<br style="clear: both;" />
 </div>
+
+<script type="text/javascript" src="/static/js/Chart.js"></script>
+<script type="text/javascript">
+	var data = {
+		labels: ["January", "Febrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+		datasets: [
+			{
+				label: "List Growth",
+				fillColor: "rgb(220, 220, 220)",
+				strokeColor: "rgb(0, 0, 0)",
+				data: {{ list_growth_data }}
+			}
+		]
+	};
+	var ctx = document.getElementById("listGrowth").getContext("2d");
+	var listGrowthChart = new Chart(ctx).Bar(data);
+</script>
 {% endblock %}
