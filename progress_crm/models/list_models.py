@@ -17,6 +17,7 @@ class List(models.Model):
 	description = models.TextField(blank=True, null=True)
 	type = models.CharField(max_length=127)
 	is_dynamic = models.NullBooleanField()
+
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(null=True, blank=True)
 	#items = reverse relation
@@ -39,6 +40,7 @@ class ListItem(models.Model):
 	content_type = models.ForeignKey(ContentType)
 	object_id = models.PositiveIntegerField()
 	content_object = GenericForeignKey('content_type', 'object_id')
+	
 	created_at = models.DateTimeField(null=True, blank=True)
 	updated_at = models.DateTimeField(null=True, blank=True)
 

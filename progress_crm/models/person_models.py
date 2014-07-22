@@ -53,6 +53,9 @@ class Person(models.Model):
 	phone_numbers = models.ManyToManyField('PhoneNumber', through='PersonPhoneNumber')
 	# profiles reverse relation to Profile model
 
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+
 	_primary_email = None
 
 	class Meta:
@@ -110,6 +113,9 @@ class PostalAddress(models.Model):
 	accuracy = models.CharField(max_length=31, choices=GEO_ACCURACY_CHOICES, blank=True, null=True)
 	status = models.CharField(max_length=31, choices=POSTAL_ADDRESS_STATUS_CHOICES)
 
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+
 	class Meta:
 		app_label = 'progress_crm'
 
@@ -120,6 +126,9 @@ class PersonPostalAddress(models.Model):
 	person = models.ForeignKey(Person)
 	postal_address = models.ForeignKey(PostalAddress)
 	primary = models.BooleanField(default=False)
+
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
 		app_label = 'progress_crm'
@@ -145,6 +154,9 @@ class PersonEmailAddress(models.Model):
 	email_address = models.ForeignKey(EmailAddress)
 	primary = models.BooleanField(default=False)
 
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+
 	class Meta:
 		app_label = 'progress_crm'
 		unique_together = ['person', 'email_address']
@@ -168,6 +180,9 @@ class PhoneNumber(models.Model):
 	sms_capable = models.BooleanField(default=False)
 	do_not_call = models.BooleanField(default=False)
 
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+
 	class Meta:
 		app_label = 'progress_crm'
 		unique_together = ('number', 'extension',)
@@ -184,6 +199,9 @@ class PersonPhoneNumber(models.Model):
 	primary = models.BooleanField(default=False)
 	description = models.TextField()
 
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
+
 	class Meta:
 		app_label = 'progress_crm'
 		unique_together = ['person', 'phone_number']
@@ -194,6 +212,9 @@ class Profile(models.Model):
 	identifier = models.CharField(max_length=255)
 	url = models.URLField()
 	handle = models.CharField(max_length=127)
+
+	created_at = models.DateTimeField(null=True, blank=True)
+	updated_at = models.DateTimeField(null=True, blank=True)
 
 	class Meta:
 		app_label = 'progress_crm'

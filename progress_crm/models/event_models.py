@@ -28,8 +28,6 @@ METHOD_CHOICES = (
 class Event(models.Model):
     identifier = models.CharField(max_length=255)
     status = models.CharField(max_length=255, choices=EVENT_STATUS_CHOICES, default='tentative')
-    created = models.DateTimeField(null=True, blank=True)
-    updated = models.DateTimeField(null=True, blank=True)
     summary = models.CharField(max_length=1023)
     description = models.TextField(blank=True)
     location = models.ForeignKey('PostalAddress')
@@ -48,6 +46,9 @@ class Event(models.Model):
     method = models.CharField(max_length=127, choices=METHOD_CHOICES, blank=True, null=True)
     minutes = models.IntegerField(blank=True, null=True)
     capacity = models.IntegerField(blank=True, null=True)
+
+    created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
     _total_accepted = None
 
@@ -89,6 +90,9 @@ class Attendance(models.Model):
     attended = models.NullBooleanField()
     comment = models.TextField()
     invited_by = models.ForeignKey('Person', related_name="guests_invited")
+
+    created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         app_label = "progress_crm"

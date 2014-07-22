@@ -6,6 +6,9 @@ class Organization(models.Model):
 	parent = models.ForeignKey('Organization', related_name='children')
 	address = models.ForeignKey('PostalAddress')
 
+	created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
+
 	class Meta:
 		app_label = 'progress_crm'
 

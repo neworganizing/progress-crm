@@ -165,7 +165,7 @@ class ActionkitAdapter(BaseAdapter):
 			form = Form(identifiers=u'actionkit:{0},'.format(form_data['id']))
 
 		form.created_at = pytz.utc.localize(parse(form_data['created_at']))
-		form.modified_at = pytz.utc.localize(parse(form_data['updated_at']))
+		form.updated_at = pytz.utc.localize(parse(form_data['updated_at']))
 		form.name = form_data['name']
 		form.title = form_data['title']
 		form.summary = ''
@@ -184,7 +184,7 @@ class ActionkitAdapter(BaseAdapter):
 			submission = Submission(identifiers=u'actionkit:{0},'.format(form_submission_data['id']))
 
 		submission.created_at = pytz.utc.localize(parse(form_submission_data['created_at']))
-		submission.modified_at = pytz.utc.localize(parse(form_submission_data['updated_at']))
+		submission.updated_at = pytz.utc.localize(parse(form_submission_data['updated_at']))
 
 		user_id = form_submission_data['user'].split('/')[-2]
 		try:
@@ -218,7 +218,7 @@ class ActionkitAdapter(BaseAdapter):
 			donation_object = Donation(identifiers=u'actionkit:{0},'.format(donation_data['id']))
 
 		donation_object.created_at = pytz.utc.localize(parse(donation_data['created_at']))
-		donation_object.modified_at = pytz.utc.localize(parse(donation_data['updated_at']))
+		donation_object.updated_at = pytz.utc.localize(parse(donation_data['updated_at']))
 		donation_object.originating_system = 'actionkit'
 
 		user_id = donation_data['user'].split('/')[-2]

@@ -16,8 +16,6 @@ class Form(models.Model):
 	submissions	Submissions[]*	A Collection of Submission resources
 	"""
 	identifiers = models.CharField(max_length=1024)
-	created_at = models.DateTimeField()
-	modified_at = models.DateTimeField()
 	name = models.CharField(max_length=512)
 	title = models.CharField(max_length=512)
 	summary = models.TextField()
@@ -25,6 +23,9 @@ class Form(models.Model):
 	call_to_action = models.TextField()
 	url = models.URLField()
 	creator = models.ForeignKey('Person', null=True, blank=True)
+	
+	created_at = models.DateTimeField()
+	updated_at = models.DateTimeField()
 
 	class Meta:
 		app_label = "progress_crm"
@@ -45,11 +46,12 @@ class Submission(models.Model):
 	question_answers	Question_Answers[]*	A Collection of Question Answer resources related to this submission
 	"""
 	identifiers = models.CharField(max_length=1024)
-	created_at = models.DateTimeField()
-	modified_at = models.DateTimeField()
 	person = models.ForeignKey('Person', related_name="form_submissions")
 	form = models.ForeignKey(Form, related_name="submissions")
 	#question_answers
+
+	created_at = models.DateTimeField()
+	updated_at = models.DateTimeField()
 
 	class Meta:
 		app_label = "progress_crm"
