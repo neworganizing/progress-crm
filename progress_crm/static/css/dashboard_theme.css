@@ -50,13 +50,13 @@ div.breadcrumbs a {
     border-radius: 0px 0px 10px 10px;
 }
 
-.dashboard-column:first-of-type {
+/*.dashboard-column:first-of-type {
     width: 66% !important;
 }
 
 .dashboard-column {
     width: 33% !important;
-}
+}*/
 
 .menu-item.selected {
     font-weight: bold;

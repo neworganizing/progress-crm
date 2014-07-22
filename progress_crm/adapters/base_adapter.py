@@ -1,3 +1,4 @@
+
 class BaseAdapter(object):
 	url = ''
 	api_key = ''
@@ -28,6 +29,20 @@ class BaseAdapter(object):
 			self.sync_lists(
 				batch_size = list_batchsize
 			)
+
+		# Etc....
+
+	def sync_people(self, start_at=0, batch_size=100):
+		if self.max_batchsize and batch_size > self.max_batchsize:
+			raise ImproperlyConfigured("{0} has a max batch size of {1}".format(self.adapter_name, self.max_batchsize))
+
+		index = start_at
+
+		while index < self.get_people_count():
+			for person in self.get_people(index, batch_size):
+				self.create_person(person)
+			index += batch_size
+			print "Imported {0} person records...".format(index)
 
 	def sync_lists(self, batch_size=100):
 		if self.max_batchsize and batch_size > self.max_batchsize:
@@ -87,18 +102,6 @@ class BaseAdapter(object):
 			index += batch_size
 			print "Imported {0} form submission records...".format(index)
 
-	def sync_people(self, start_at=0, batch_size=100):
-		if self.max_batchsize and batch_size > self.max_batchsize:
-			raise ImproperlyConfigured("{0} has a max batch size of {1}".format(self.adapter_name, self.max_batchsize))
-
-		index = start_at
-
-		while index < self.get_people_count():
-			for person in self.get_people(index, batch_size):
-				self.create_person(person)
-			index += batch_size
-			print "Imported {0} person records...".format(index)
-
 	### METHODS FOR OVERRIDING ###
 
 	def connect(self, rl, username, password):
@@ -129,10 +132,24 @@ class BaseAdapter(object):
 		"""
 		pass
 
+	def post_person(self, person):
+		"""
+		Override this method to take a Person model and post it back to your
+		adapter.
+		"""
+		pass
+
 	def create_list_item(self, list_item_data, list_object):
 		"""
 		Override this method to take a dictionary of list_item_data formatted
 		according to your API and produce a Person object.
+		"""
+		pass
+
+	def post_list_item(self, list_item):
+		"""
+		Override this method to take a ListItem model and post it back to your
+		adapter.
 		"""
 		pass
 
@@ -143,6 +160,13 @@ class BaseAdapter(object):
 		you are using.
 		"""
 		return None
+
+	def post_list(self, list):
+		"""
+		Override this method to take a List model and post it back to your
+		adapter.
+		"""
+		pass
 
 	def get_donations_count(self):
 		"""
@@ -159,6 +183,13 @@ class BaseAdapter(object):
 	def create_donation(self, donation_data):
 		"""
 		Override to translate donation_data to a donation object.
+		"""
+		pass
+
+	def post_donation(self, donation):
+		"""
+		Override this method to take a Donation model and post it back to your
+		adapter.
 		"""
 		pass
 
@@ -180,6 +211,13 @@ class BaseAdapter(object):
 		"""
 		pass
 
+	def post_form(self, form):
+		"""
+		Override this method to take a Form model and post it back to your
+		adapter.
+		"""
+		pass
+
 	def get_form_submissions_count(self):
 		"""
 		Override to return the number of forms in the system
@@ -198,8 +236,9 @@ class BaseAdapter(object):
 		"""
 		pass
 
-	def update_person(self, person_data):
+	def post_form_submission(self, form_submission):
 		"""
-		Override to send data to the adapter's API to update a person.
+		Override this method to take a FormSubmission model and post it back to your
+		adapter.
 		"""
 		pass

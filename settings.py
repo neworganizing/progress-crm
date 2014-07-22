@@ -111,3 +111,8 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 SOUTH_TESTS_MIGRATE=False
+
+PCRM_DASHBOARD_ORDER = (
+    'CRMStatsModule',
+    'CRMReportingModule'
+)
