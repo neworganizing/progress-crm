@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
-from progress_crm.views import SQLView
+from progress_crm_reporting.views import SQLQueryView, SQLResultView
 
 urlpatterns = patterns('',
-    url(r'^sql/', SQLView.as_view(), name="sql_url"),
+    url(r'^sql_query/', SQLQueryView.as_view(), name="sql_query_form"),
+    url(r'^sql_result/', SQLResultView.as_view(), name="sql_query_result"),
 )

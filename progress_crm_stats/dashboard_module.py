@@ -4,7 +4,6 @@ from progress_crm.models import Person, Event, Donation, List, ListItem
 
 class CRMStatsModule(CRMDashboardModule):
     title = 'Statistics'
-    template = "progress_crm_stats/stats_module.html"
 
     def is_empty():
         return False

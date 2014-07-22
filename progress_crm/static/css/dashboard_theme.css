@@ -32,34 +32,12 @@ div.breadcrumbs a {
     display: inline;
 }
 
-.dashboard-module {
-    font-family: sans-serif, Verdana;
-    border-radius: 10px;
-    border: 1px solid #FFF;
-    background: #FFF;
-    padding: 0;
-}
-
-.dashboard-module h2 {
-    border-radius: 10px 10px 0px 0px;
-    background: #3969F5;
-    color: #FFF;
-}
-
-.dashboard-module-content, .group-tabs {
-    border-radius: 0px 0px 10px 10px;
-}
-
-/*.dashboard-column:first-of-type {
-    width: 66% !important;
-}
-
-.dashboard-column {
-    width: 33% !important;
-}*/
-
 .menu-item.selected {
     font-weight: bold;
+}
+
+.group ul {
+    background: none;
 }
 
 .group-tabs ul.ui-tabs-nav {
@@ -76,6 +54,7 @@ div.breadcrumbs a {
     border-right: 1px solid #CCC;
     color: #0F1B40;
     font-weight: bold;
+    font-size: 12pt;
 }
 
 .group-tabs ul li.group-tabs-link a:hover,
@@ -83,3 +62,47 @@ div.breadcrumbs a {
     background: #1E377F;
     color: #FFF;
 }
+
+.ui-widget-content {
+    background: none;
+}
+
+.group-tabs ul.ui-tabs-nav {
+    border: none;
+}
+
+.dashboard-module {
+    font-family: sans-serif, Verdana;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.dashboard-module h2 {
+    /*border-radius: 10px 10px 0px 0px;
+    background: #3969F5;
+    color: #FFF;*/
+    display: none;
+}
+
+.dashboard-module-content, .group-tabs {
+    border-radius: 0px 0px 10px 10px;
+    border: none;
+}
+
+/* Because all of our content is nested, use this selector to give it a background */
+
+.dashboard-module .dashboard-module {
+    background: #FFF;    
+}
+
+
+/*.dashboard-column:first-of-type {
+    width: 66% !important;
+}
+
+.dashboard-column {
+    width: 33% !important;
+}*/

@@ -8,8 +8,13 @@
 		width: 100%;
 	}
 
+	table#toplines tr td {
+		font-size: 12pt;
+		text-align: center;
+	}
+
 	table#lists {
-		width: 100%;
+		
 	}
 
 	table#lists, table#states {
@@ -18,6 +23,7 @@
 </style>
 
 <div class="clearfix">
+	<h3>Toplines</h3>
 	<table id="toplines">
 		<tr>
 			<td>Total people: {{ total_people }}</td>
@@ -27,10 +33,11 @@
 		</tr>
 	</table>
 
-	<div style="width: 66%; float: left;">
-		<canvas id="listGrowth" style="width: 100% !important; max-width: 600px; height: auto !important;"></canvas>
+	<h3>List Stats</h3>
+	<div>
+		<canvas id="listGrowth" width="800" height="400" style="float: left;"></canvas>
 
-		<table id="lists">
+		<table id="lists" style="float: left;">
 			<tr>
 				<th>List</th>
 				<th>Count</th>
@@ -44,7 +51,7 @@
 		</table>
 	</div>
 	
-	<div style="width: 33%; float: left;">
+	<div style="clear: left;">
 	<table id="states">
 		<tr>
 			<th>State</th>

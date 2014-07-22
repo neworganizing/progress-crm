@@ -11,5 +11,6 @@ urlpatterns = patterns('',
     # url(r'^$', 'myapp.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/progress_crm/reporting/', include('progress_crm_reporting.urls')),
     url(r'^admin_tools/', include('admin_tools.urls')),
 )

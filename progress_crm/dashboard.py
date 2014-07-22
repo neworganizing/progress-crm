@@ -24,6 +24,10 @@ class CRMDashboard(AppIndexDashboard):
     title = None
     columns = 1
 
+    class Media:
+        css = None
+        js = ('js/progress_crm.js',)
+
     def __init__(self, *args, **kwargs):
         AppIndexDashboard.__init__(self, *args, **kwargs)
 

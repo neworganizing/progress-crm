@@ -1,0 +1,21 @@
+{% load humanize %}
+<h3>Create a new report</h3>
+<form action="{% url "sql_query_form" %}" method="post" id="sql-query-form">
+	{% csrf_token %}
+
+	<p>
+		<label>SQL Query Name</label><br />
+		{{ form.name.errors }}
+		{{ form.name }}
+	</p>
+
+	<p>
+		<label>SQL Query Script</label><br />
+		{{ form.script.errors }}
+		{{ form.script }}
+	</p>
+
+	<p>
+		<button type="submit">Execute Query</button>
+	</p>
+</form>

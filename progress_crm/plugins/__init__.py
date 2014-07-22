@@ -10,3 +10,9 @@ class CRMDashboardRegister(type):
 
 class CRMDashboardModule(modules.DashboardModule):
     __metaclass__ = CRMDashboardRegister
+
+    def __init__(self, **kwargs):
+    	self.template = self.__module__.split(".")[0]+"/dashboard.html"
+    	super(CRMDashboardModule, self).__init__(**kwargs)
+
+    #template = "dashboard.html"

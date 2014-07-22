@@ -8,7 +8,7 @@ class CRMReportingModule(CRMDashboardModule):
     def is_empty():
         return False
 
-    template = "progress_crm_reporting/reporting_module.html"
+    #template = "progress_crm_reporting/reporting_module.html"
 
     def init_with_context(self, context):
         super(CRMReportingModule, self).init_with_context(context)
