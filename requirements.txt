@@ -4,3 +4,4 @@ django-admin-tools
 flake8
 pytz
 python-dateutil
+south
