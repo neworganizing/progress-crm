@@ -7,3 +7,6 @@ class SalsaAdapter(BaseAdapter):
 
 	adapter_name = 'Salsa'
 
+	def connect(self):
+		pass
+
