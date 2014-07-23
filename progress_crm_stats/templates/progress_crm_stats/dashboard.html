@@ -1,0 +1,89 @@
+{% extends "admin_tools/dashboard/module.html" %}
+
+{% load humanize %}
+
+{% block module_content %}
+<style>
+	table#toplines {
+		width: 100%;
+	}
+
+	table#toplines tr td {
+		font-size: 12pt;
+		text-align: center;
+	}
+
+	table#lists {
+		
+	}
+
+	table#lists, table#states {
+		float: left;
+	}
+</style>
+
+<div class="clearfix">
+	<h3>Toplines</h3>
+	<table id="toplines">
+		<tr>
+			<td>Total people: {{ total_people }}</td>
+			<td>Total events: {{ total_events }}</td>
+			<td>Total donations: {{ total_donations }}</td>
+			<td>Total amount raised: ${{ total_donation_amount|floatformat:2|intcomma }}</td>
+		</tr>
+	</table>
+
+	<h3>List Stats</h3>
+	<div>
+		<canvas id="listGrowth" width="800" height="400" style="float: left;"></canvas>
+
+		<table id="lists" style="float: left;">
+			<tr>
+				<th>List</th>
+				<th>Count</th>
+			</tr>
+		{% for list in lists %}
+			<tr {% if forloop.first %}class="selected"{% endif %}>
+				<td>{{ list.name }}</td>
+				<td>{{ list.item_count }}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	</div>
+	
+	<div style="clear: left;">
+	<table id="states">
+		<tr>
+			<th>State</th>
+			<th>Count</th>
+		</tr>
+
+		{% for state in state_counts %}
+			<tr>
+				<td>{{ state.postal_addresses__region }}</td>
+				<td>{{ state.count }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	</div>
+
+	<br style="clear: both;" />
+</div>
+
+<script type="text/javascript" src="/static/js/Chart.js"></script>
+<script type="text/javascript">
+	var data = {
+		labels: ["January", "Febrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+		datasets: [
+			{
+				label: "List Growth",
+				fillColor: "rgb(220, 220, 220)",
+				strokeColor: "rgb(0, 0, 0)",
+				data: {{ list_growth_data }}
+			}
+		]
+	};
+	var ctx = document.getElementById("listGrowth").getContext("2d");
+	var listGrowthChart = new Chart(ctx).Bar(data);
+</script>
+{% endblock %}

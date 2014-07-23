@@ -1,0 +1,108 @@
+/** 
+ * theming styles
+ * 
+ */
+
+body {
+    background: #DFDFDF;
+}
+
+#header {
+    background: #3969F5;
+}
+
+#header #branding h1 {
+    margin: 0;
+    padding: 5px 10px;
+    text-indent: -9999px;
+    background: transparent url(../images/django.png) 10px 5px no-repeat;
+    height: 31px;
+    width: 93px;
+}
+
+div.breadcrumbs {
+    display: block;
+    padding: 10px 15px;
+    border: 0;
+    background-position: 0 -8px;
+    border-bottom: 1px solid #ededed;
+}
+
+div.breadcrumbs a {
+    display: inline;
+}
+
+.menu-item.selected {
+    font-weight: bold;
+}
+
+.group ul {
+    background: none;
+}
+
+.group-tabs ul.ui-tabs-nav {
+    padding: 0;
+    border: 0;
+    border-right: 1px solid #DFDFDF;
+}
+
+.group-tabs ul li.group-tabs-link {
+    background: #FFF;
+    margin: 0;
+    border-radius: 0;
+    border: 0;
+    border-right: 1px solid #CCC;
+    color: #0F1B40;
+    font-weight: bold;
+    font-size: 12pt;
+}
+
+.group-tabs ul li.group-tabs-link a:hover,
+.group-tabs ul li.group-tabs-link.ui-tabs-active a {
+    background: #1E377F;
+    color: #FFF;
+}
+
+.ui-widget-content {
+    background: none;
+}
+
+.group-tabs ul.ui-tabs-nav {
+    border: none;
+}
+
+.dashboard-module {
+    font-family: sans-serif, Verdana;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+.dashboard-module h2 {
+    /*border-radius: 10px 10px 0px 0px;
+    background: #3969F5;
+    color: #FFF;*/
+    display: none;
+}
+
+.dashboard-module-content, .group-tabs {
+    border-radius: 0px 0px 10px 10px;
+    border: none;
+}
+
+/* Because all of our content is nested, use this selector to give it a background */
+
+.dashboard-module .dashboard-module {
+    background: #FFF;    
+}
+
+
+/*.dashboard-column:first-of-type {
+    width: 66% !important;
+}
+
+.dashboard-column {
+    width: 33% !important;
+}*/

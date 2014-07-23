@@ -1,0 +1,1 @@
+from dashboard_module import CRMStatsModule

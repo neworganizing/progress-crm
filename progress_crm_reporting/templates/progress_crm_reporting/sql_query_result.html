@@ -1,0 +1,13 @@
+<p><a href="{% url "sql_query_form" %}">Edit Query</a></p>
+
+<h4>Query Result:</h4>
+
+<table>
+{% for row in query_result %}
+<tr>
+{% for cell in row %}
+<td>{{ cell }}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+</table>

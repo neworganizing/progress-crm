@@ -1,0 +1,32 @@
+{% extends "admin_tools/dashboard/module.html" %}
+
+{% block module_content %}
+<style>
+#pcrm-reporting-output {
+	border: 1px solid #EFEFEF;
+	margin: 10px;
+}
+
+#pcrm-reporting-output #new-report-prompt {
+	background: #F4F4F4;
+	color: #CDCDCD;
+	text-align: center;
+	font-weight: bold;
+	font-size: 16pt;
+	padding: 4em 0;
+}
+</style>
+
+<nav>
+	<ul>
+		<li><a href="">Create New Report</a></li>
+		<li><a href="{% url "sql_query_form" %}?new=True">Create New SQL Query</a></li>
+	</ul>
+</nav>
+
+<div id="pcrm-reporting-output" class="content-target">
+	<div id="new-report-prompt">
+		Create a new report to get started!
+	</div>
+</div>
+{% endblock %}
